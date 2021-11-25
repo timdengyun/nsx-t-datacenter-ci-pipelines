@@ -136,7 +136,7 @@ resources:
 - name: nsx-t-gen-pipeline
   type: git
   source:
-    uri: https://github.com/vmware/nsx-t-datacenter-ci-pipelines.git
+    uri: https://github.com/timdengyun/nsx-t-datacenter-ci-pipelines.git
     params:
       disable_git_lfs: true
     branch: ((nsx_t_pipeline_branch))
