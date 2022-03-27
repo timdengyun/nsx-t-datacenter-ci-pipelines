@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e
+set -ex
 
 export ROOT_DIR=`pwd`
 
@@ -66,12 +66,31 @@ if [ "$enable_ansible_debug_int" == "true" ]; then
   DEBUG="-vvv"
 fi
 
+#DEBUG="-vvv"
+#ansible-config dump |grep DEFAULT_MODULE_PATH
+#ansible-config dump |grep DEFAULT_CALLBACK_PLUGIN_PATH
+#ansible-config dump |grep DEFAULT_FILTER_PLUGIN_PATH
+#ansible-config dump |grep BECOME_PLUGIN_PATH
+
+#update-alternatives --install /usr/bin/python python /usr/bin/python2 1
+#update-alternatives --install /usr/bin/python python /usr/bin/python3 2
+
+echo "Install Ansible NSXT v3.2.0 Galaxy collection"
+ansible-galaxy collection install git+https://github.com/vmware/ansible-for-nsxt.git,v3.2.0
+
+#ansible-config dump |grep DEFAULT_MODULE_PATH
+#ansible-config dump |grep DEFAULT_CALLBACK_PLUGIN_PATH
+#ansible-config dump |grep DEFAULT_FILTER_PLUGIN_PATH
+#ansible-config dump |grep BECOME_PLUGIN_PATH
+
 create_hosts
 cp ${PIPELINE_DIR}/tasks/install-nsx-t/get_mo_ref_id.py ./
 python get_mo_ref_id.py --host $vcenter_ip_int --user $vcenter_username_int --password $vcenter_password_int
 
 cp hosts.out ${PIPELINE_DIR}/nsxt_yaml/basic_topology.yml ${PIPELINE_DIR}/nsxt_yaml/vars.yml nsxt-ansible/
 cd nsxt-ansible
+ls
+
 cp ${PIPELINE_DIR}/tasks/install-nsx-t/modify_options.py ./
 
 if [[ "$unified_appliance_int" == "true" ]]; then
@@ -85,6 +104,8 @@ install_ovftool
 
 cp ${PIPELINE_DIR}/tasks/install-nsx-t/turn_off_reservation.py ./
 cp ${PIPELINE_DIR}/tasks/config-nsx-t-extras/*.py ./
+
+echo "DEBUG is $DEBUG"
 
 ansible-playbook $DEBUG -i hosts.out basic_topology.yml
 STATUS=$?
